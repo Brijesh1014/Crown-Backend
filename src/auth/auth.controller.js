@@ -48,11 +48,13 @@ const register = async (req, res) => {
       email,
       username,
       password: hashedPassword,
+      isEmailVerified: true,
       country,
       state,
       city,
       zipCode,
       role,
+
       phoneNumber,
       deliveryAddress,
       rewardPoints,
@@ -60,24 +62,10 @@ const register = async (req, res) => {
 
     await newUser.save();
 
-    if ( role === "Customer") {
-      const otp = generateOTP();
-      newUser.resetOtp = otp;
-      newUser.otpExpiry = Date.now() + 10 * 60 * 1000;
-      await newUser.save();
-      await sendOtp(
-        otp,
-        "Crown",
-        email,
-        "Your OTP for Email Verification",
-        "../views/emailVerification.ejs"
-      );
-    }
-
     res.status(201).json({
       success: true,
       data: newUser,
-      message: "User registered successfully. Please verify your email.",
+      message: "User registered successfully.",
     });
   } catch (err) {
     res.status(500).json({ message: "Server error." });
